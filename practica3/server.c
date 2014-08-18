@@ -5,8 +5,8 @@
  * Compilación: gcc -W -o servidorhttp server.c
  * Ejecución: sudo ./servidorhttp
  * Este sencillo servidor es capaz de servir páginas en formato HTML.
- *
- * 
+ * Si el archivo existe, se envía el archivo al navegador. En caso de 
+ * que no exista, se envía un mensaje 404.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,28 +23,6 @@
 #define BEGIN_STRING_FILE 5 // Índice a partir del que se empezará a leer la petición.
 
 
-/**
- * En caso de que no se encuentre, se enviará un mensaje 404.
- * int socket(int domain, int type, int protocol);
- * Analicemos los argumentos:
- *
- * --domain-- Se podrá establecer como AF_INET (para usar 
- * los protocolos ARPA de Internet), o como AF_UNIX (si 
- * se desea crear sockets para la comunicación interna 
- * del sistema). Éstas son las más usadas, pero no las 
- * únicas. Existen muchas más, aunque no se nombrarán aquí.
- *
- * --type-- Aquí se debe especificar la clase de socket que
- * queremos usar (de Flujos o de Datagramas). Las variables
- * que deben aparecer son SOCK_STREAM o SOCK_DGRAM según 
- * querramos usar sockets de Flujo o de Datagramas, respectivamente.
- * 
- * --protocol-- Aquí, simplemente se puede establecer el protocolo a 0.
- * La función socket() nos devuelve un descriptor de socket, el 
- * cual podremos usar luego para llamadas al sistema. Si nos devuelve
- * -1, se ha producido un error (obsérvese que esto puede resultar útil
- *  para rutinas de verificación de errores).
- */
 
 int main(){
 	int fd_servidor, fd_cliente; /*Los descriptores de fichero*/
@@ -130,24 +108,25 @@ int main(){
 		//send(fd_cliente,error,22,0);
 		if(fork() == 0){
 			close(fd_servidor); //El proceso hijo no lo necesita
-			if((file_to_send = fopen(path,"r")) != (FILE*)0){
+			if((file_to_send = fopen(path,"r")) != (FILE*)0){ //si podemos leer
 				count = 0;
 				sum = 0;
-				while((character = getc(file_to_send)) != EOF){
+				while((character = getc(file_to_send)) != EOF){ //enviamos los datos.
 					bufenv[count++] = character;
 					sum++;
 					if(count >= 1024){
-						send(fd_cliente,bufenv,count,0);
+						send(fd_cliente,bufenv,count,0); 
 						count = 0;
 					}
 				}
 				send(fd_cliente,bufenv,count,0);
 				printf("Total de bytes enviados del archivo (%s): %d\n", path, sum);	
-			} else{
+			} else{ // Enviamos el mensaje de error en caso de que no exista el archivo.
 				send(fd_cliente,error,strlen(error),0);
 				sum = strlen(error);
 				printf("Total de bytes enviados del archivo (%s): %d\n", "error", sum);	
 			}
+			//Cerramos todos los canales.
 			fclose(file_to_send);
 			close(fd_cliente);
 			printf("Total de bytes enviados: %d\n", sum);
