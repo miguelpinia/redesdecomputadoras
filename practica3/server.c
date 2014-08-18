@@ -1,12 +1,13 @@
-/**
- * Servidor HTTP simple.
- * @author: Miguel Angel Piña Avelino
- * @version: 0.1
- * Compilación: gcc -W -o servidorhttp server.c
- * Ejecución: sudo ./servidorhttp
- * Este sencillo servidor es capaz de servir páginas en formato HTML.
- * Si el archivo existe, se envía el archivo al navegador. En caso de 
- * que no exista, se envía un mensaje 404.
+/****************************************************************************
+ * Servidor HTTP simple.													*
+ * @author: Miguel Angel Piña Avelino										*
+ * @version: 0.1 															*
+ * Compilación: gcc -W -o servidorhttp server.c 							*
+ * Ejecución: sudo ./servidorhttp 											*
+ * Este sencillo servidor es capaz de servir páginas en formato HTML.		*
+ * Si el archivo existe, se envía el archivo al navegador. En caso de 		*
+ * que no exista, se envía un mensaje 404.									*
+ ****************************************************************************
  */
 #include <stdio.h>
 #include <stdlib.h>
